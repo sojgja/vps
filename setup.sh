@@ -94,3 +94,15 @@ fi
 if ! grep -q "zsh-syntax-highlighting.zsh" $ZSHRC; then
   echo "source $ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $ZSHRC
 fi
+
+echo "Clone git repo..."
+
+REPO_DIR="$HOME/vps"
+
+if [ -d "$REPO_DIR" ]; then
+  echo "Repo exists → removing..."
+  rm -rf "$REPO_DIR"
+fi
+
+git clone git@github.com:sojgja/vps.git "$REPO_DIR"
+
