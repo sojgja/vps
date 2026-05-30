@@ -115,3 +115,6 @@ else
   exit 1
 fi
 
+docker --version
+docker compose --version
+
