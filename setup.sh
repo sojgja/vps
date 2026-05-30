@@ -1,67 +1,70 @@
-# curl -sSL https://raw.githubusercontent.com/sojgja/vps/dev/setup.sh | bash
 #!/bin/bash
 
 set -e
 
 echo "=============================="
-echo "  VPS BOOTSTRAP - DEBIAN 12   "
+echo " VPS BOOTSTRAP - DEBIAN 12 FIXED"
 echo "=============================="
 
-# Update system
-echo "[1/6] Updating system..."
+# update system
+echo "[1/7] Updating system..."
 apt update -y && apt upgrade -y
 
-# Core tools
-echo "[2/6] Installing core tools..."
+# base tools
+echo "[2/7] Installing base tools..."
 apt install -y \
-  git \
-  curl \
-  wget \
-  vim \
-  htop \
-  unzip \
-  sudo \
-  build-essential \
-  ca-certificates \
-  gnupg \
-  lsb-release
+  git curl wget vim htop unzip sudo \
+  build-essential ca-certificates gnupg lsb-release zsh
 
-# Install Zsh
-echo "[3/6] Installing Zsh..."
-apt install -y zsh
-
-# Set Zsh as default shell
-chsh -s $(which zsh) || true
-
-# Install Oh My Zsh (non-interactive)
-echo "[4/6] Installing Oh My Zsh..."
-RUNZSH=no KEEP_ZSHRC=yes \
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# Install plugins
-echo "[5/6] Installing Zsh plugins..."
-
-ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
-
-# autosuggestions
-git clone https://github.com/zsh-users/zsh-autosuggestions \
-  ${ZSH_CUSTOM}/plugins/zsh-autosuggestions || true
-
-# syntax highlighting
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-  ${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting || true
-
-# Add plugins to .zshrc
-echo "[6/6] Configuring .zshrc..."
-
-if [ -f ~/.zshrc ]; then
-  sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' ~/.zshrc || true
+# set zsh default (safe version)
+echo "[3/7] Setting zsh..."
+if grep -q "/zsh" /etc/shells; then
+  chsh -s $(which zsh) || true
 fi
 
-# Apply changes
-echo "Switching to zsh..."
-echo "Done. Please reconnect SSH or run: zsh"
+# install oh-my-zsh (SAFE MODE - no prompt)
+echo "[4/7] Installing oh-my-zsh..."
+export RUNZSH=no
+export KEEP_ZSHRC=yes
+
+rm -rf ~/.oh-my-zsh
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
+# install plugins directory
+echo "[5/7] Installing plugins..."
+ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
+
+mkdir -p ${ZSH_CUSTOM}/plugins
+
+# autosuggestions
+if [ ! -d "${ZSH_CUSTOM}/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions \
+    ${ZSH_CUSTOM}/plugins/zsh-autosuggestions
+fi
+
+# syntax highlighting
+if [ ! -d "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
+    ${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting
+fi
+
+# fix .zshrc safely
+echo "[6/7] Configuring zshrc..."
+
+if [ ! -f ~/.zshrc ]; then
+  cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+fi
+
+sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/g' ~/.zshrc || true
+
+# final check
+echo "[7/7] Verifying installation..."
+
+zsh --version || true
+git --version || true
 
 echo "=============================="
-echo " VPS SETUP COMPLETED SUCCESS "
+echo " VPS SETUP DONE OK"
+echo " RECONNECT SSH OR RUN: zsh"
 echo "=============================="
