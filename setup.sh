@@ -95,14 +95,23 @@ if ! grep -q "zsh-syntax-highlighting.zsh" $ZSHRC; then
   echo "source $ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $ZSHRC
 fi
 
-echo "Clone git repo..."
+echo "[GIT] Cloning repository..."
 
 REPO_DIR="$HOME/vps"
+REPO_URL="https://github.com/sojgja/vps.git"
 
+# luôn dọn sạch để tránh conflict
 if [ -d "$REPO_DIR" ]; then
   echo "Repo exists → removing..."
   rm -rf "$REPO_DIR"
 fi
 
-git clone https://github.com/sojgja/vps.git "$REPO_DIR"
+# clone + check lỗi rõ ràng
+if git clone "$REPO_URL" "$REPO_DIR"; then
+  echo "Clone SUCCESS"
+else
+  echo "Clone FAILED"
+  echo "Check network / github / disk space"
+  exit 1
+fi
 
