@@ -115,8 +115,20 @@ else
   exit 1
 fi
 
-echo "install python venv"
-apt install -y python3.11-venv
-apt install -y python3 python3-pip
-pip install requests django fastapi pandas soigia
+echo "[PYTHON] Creating virtual environment..."
+apt install -y python3-venv python3-pip
 
+VENV_DIR="$HOME/.venv"
+
+python3 -m venv "$VENV_DIR"
+
+echo "[PYTHON] Upgrading pip..."
+"$VENV_DIR/bin/pip" install --upgrade pip
+
+echo "[PYTHON] Installing packages..."
+"$VENV_DIR/bin/pip" install \
+  requests \
+  django \
+  fastapi \
+  pandas \
+  SqlAlchemy
