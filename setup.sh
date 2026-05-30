@@ -115,10 +115,8 @@ else
   exit 1
 fi
 
-echo "docker version"
-docker --version
-docker compose version
-
 echo "install python venv"
-apt install python3.11-venv
+apt install -y python3.11-venv
+apt install -y python3 python3-pip
+pip install requests django fastapi pandas soigia
 
