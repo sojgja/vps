@@ -70,21 +70,27 @@ echo " RECONNECT SSH OR RUN: zsh"
 echo "=============================="
 
 echo "[CONFIG] Enabling zsh plugins..."
+echo "[ZSH CONFIG] Fix autosuggestions..."
 
 ZSHRC=~/.zshrc
 ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
 
-# ensure file exists
+# đảm bảo zshrc tồn tại
 if [ ! -f "$ZSHRC" ]; then
   cp ~/.oh-my-zsh/templates/zshrc.zsh-template $ZSHRC
 fi
 
-# enable plugins safely (không overwrite)
+# set plugins (không đủ để autosuggestions chạy nhưng vẫn cần)
 sed -i 's/^plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' $ZSHRC || true
 
-# add syntax highlighting source if not exists
-if ! grep -q "zsh-syntax-highlighting.zsh" $ZSHRC; then
+# 🔥 QUAN TRỌNG: force source autosuggestions (fix chính)
+if ! grep -q "zsh-autosuggestions.zsh" $ZSHRC; then
   echo "" >> $ZSHRC
-  echo "# ZSH SYNTAX HIGHLIGHTING" >> $ZSHRC
-  echo "source \$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $ZSHRC
+  echo "# AUTO FIX AUTOSUGGESTIONS" >> $ZSHRC
+  echo "source $ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" >> $ZSHRC
+fi
+
+# syntax highlighting phải đặt CUỐI file
+if ! grep -q "zsh-syntax-highlighting.zsh" $ZSHRC; then
+  echo "source $ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $ZSHRC
 fi
