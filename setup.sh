@@ -104,5 +104,5 @@ if [ -d "$REPO_DIR" ]; then
   rm -rf "$REPO_DIR"
 fi
 
-git clone git@github.com:sojgja/vps.git "$REPO_DIR"
+git clone https://github.com/sojgja/vps.git "$REPO_DIR"
 
