@@ -115,6 +115,10 @@ else
   exit 1
 fi
 
+echo "docker version"
 docker --version
-docker compose --version
+docker compose version
+
+echo "install python venv"
+apt install python3.11-venv
 
