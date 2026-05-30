@@ -68,3 +68,23 @@ echo "=============================="
 echo " VPS SETUP DONE OK"
 echo " RECONNECT SSH OR RUN: zsh"
 echo "=============================="
+
+echo "[CONFIG] Enabling zsh plugins..."
+
+ZSHRC=~/.zshrc
+ZSH_CUSTOM=${ZSH_CUSTOM:-~/.oh-my-zsh/custom}
+
+# ensure file exists
+if [ ! -f "$ZSHRC" ]; then
+  cp ~/.oh-my-zsh/templates/zshrc.zsh-template $ZSHRC
+fi
+
+# enable plugins safely (không overwrite)
+sed -i 's/^plugins=(.*)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' $ZSHRC || true
+
+# add syntax highlighting source if not exists
+if ! grep -q "zsh-syntax-highlighting.zsh" $ZSHRC; then
+  echo "" >> $ZSHRC
+  echo "# ZSH SYNTAX HIGHLIGHTING" >> $ZSHRC
+  echo "source \$ZSH_CUSTOM/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $ZSHRC
+fi
